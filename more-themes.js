@@ -1,0 +1,7 @@
+const extraThemes = [['paper', 'Paper'], ['daylight', 'Daylight']];
+const themePicks = document.querySelector('.theme-picks');
+extraThemes.forEach(([theme, label]) => { const button = document.createElement('button'); button.className = 'theme-choice'; button.dataset.theme = theme; button.innerHTML = `<i></i>${label}`; themePicks.append(button); button.addEventListener('click', () => { document.body.dataset.theme = theme; document.querySelectorAll('.theme-choice').forEach(choice => choice.classList.toggle('selected', choice === button)); localStorage.setItem('questlog-theme', theme); }); });
+const platformIcons = { steam: 'steam', xbox: 'xbox', playstation: 'playstation' };
+document.querySelectorAll('.platform').forEach(button => { const icon = platformIcons[button.value]; const oldMark = button.querySelector('b'); if (oldMark && icon) { const image = document.createElement('img'); image.src = `https://cdn.simpleicons.org/${icon}/f4f4ed`; image.alt = `${button.value} logo`; image.onerror = () => { const fallback = document.createElement('span'); fallback.className = `logo-fallback ${button.value}`; fallback.textContent = button.value === 'xbox' ? 'X' : button.value === 'steam' ? 'S' : 'PS'; image.replaceWith(fallback); }; oldMark.replaceWith(image); } });
+const delayedTheme = localStorage.getItem('questlog-theme');
+if (delayedTheme && ['paper', 'daylight'].includes(delayedTheme)) document.querySelector(`.theme-choice[data-theme="${delayedTheme}"]`)?.click();

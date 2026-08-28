@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Questlog — Your game life, together</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="extras.css" />
+    <link rel="stylesheet" href="fixes.css" />
+    <link rel="stylesheet" href="enhancements.css" />
+    <link rel="stylesheet" href="more-themes.css" />
+    <link rel="stylesheet" href="logo-fallbacks.css" />
+    <link rel="stylesheet" href="plus.css" />
+    <link rel="stylesheet" href="plus-membership.css" />
+    <link rel="stylesheet" href="plus-member-fix.css" />
+    <link rel="stylesheet" href="production.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#"><span class="brand-mark">Q</span><span>questlog</span></a>
+        <nav>
+          <a class="nav-item active" href="#home"><span>◈</span> Home</a>
+          <a class="nav-item" href="#library"><span>▦</span> My library</a>
+          <a class="nav-item" href="#discover"><span>⌕</span> Discover</a>
+          <a class="nav-item" href="#friends"><span>♧</span> Friends <b>3</b></a>
+        </nav>
+        <div class="side-bottom">
+          <button class="add-game" id="addGame"><span>＋</span> Add a game</button>
+          <button class="profile-mini profile-trigger"><span class="avatar me">P</span><span><strong>Preet <em class="exec-badge">EXEC</em></strong><small>@preetplays</small></span><i>⋮</i></button>
+        </div>
+      </aside>
+      <main>
+        <section class="view active" id="home">
+        <header class="topbar"><div><p class="eyebrow">FRIDAY, AUGUST 28</p><h1>Good evening, Preet <span>✦</span></h1></div><div class="top-actions"><button class="icon-button" aria-label="Notifications">♧<em></em></button><button class="avatar me profile-trigger">P</button></div></header>
+        <section class="now-playing card">
+          <div class="game-art starfield"><span class="art-title">THE<br>OUTER<br>WORLDS</span></div>
+          <div class="now-copy"><p class="eyebrow lime">NOW PLAYING</p><h2>The Outer Worlds</h2><p class="muted">Obsidian Entertainment · 2019</p><div class="progress-row"><div class="progress"><span style="width: 62%"></span></div><strong>62%</strong></div><p class="session-note">Last played <b>yesterday</b> · 14h 28m total</p><div class="actions"><button class="primary" id="logSession">Log a session</button><button class="secondary" id="advanceGame">Update progress</button></div></div>
+          <div class="playing-meta"><div><span>YOUR RATING</span><strong class="rating">★ 8.5</strong></div><div><span>PLATFORM</span><strong>PC</strong></div><button class="more">•••</button></div>
+        </section>
+        <section class="section-heading" id="feed"><div><p class="eyebrow">YOUR CIRCLE</p><h2>Activity</h2></div><button class="text-button">See all activity →</button></section>
+        <section class="feed" id="activityFeed"></section>
+        </section>
+        <section class="view" id="library"><header class="page-header"><p class="eyebrow">YOUR COLLECTION</p><div><h1>My library</h1><span><button class="secondary connect-trigger">Connect accounts</button><button class="primary add-game-inline">＋ Add a game</button></span></div><p class="muted">Keep your backlog, current sessions, and favourites in one place.</p></header><div class="library-tabs"><button class="selected">All <b>18</b></button><button>Playing <b>2</b></button><button>Want to play <b>11</b></button><button>Completed <b>5</b></button></div><div class="game-grid" id="libraryGrid"></div></section>
+        <section class="view" id="discover"><header class="page-header"><p class="eyebrow">FIND YOUR NEXT OBSESSION</p><h1>Discover games</h1><p class="muted">Picked from your friends’ recent favourites and your taste in RPGs.</p></header><div class="discover-hero"><div><span class="pill">FRIENDS ARE LOVING</span><h2>Clair Obscur:<br>Expedition 33</h2><p>Five people in your circle are playing this week.</p><button class="primary discover-add">＋ Add to wishlist</button></div><div class="hero-orb">33</div></div><section class="section-heading discover-heading"><div><p class="eyebrow">BASED ON YOUR LIBRARY</p><h2>Made for you</h2></div><button class="text-button">Explore all →</button></section><div class="recommendations" id="recommendations"></div></section>
+        <section class="view" id="friends"><header class="page-header"><p class="eyebrow">YOUR GAMING CIRCLE</p><div><h1>Friends</h1><button class="secondary" id="findFriends">Find friends</button></div><p class="muted">Follow what your friends are playing and find the next game for the group.</p></header><div class="friend-summary"><div><strong>12</strong><span>Following</span></div><div><strong>9</strong><span>Followers</span></div><div><strong>4</strong><span>Online now</span></div></div><section class="section-heading"><div><p class="eyebrow">PLAYING NOW</p><h2>Jump into a game</h2></div></section><div class="friends-grid" id="friendsGrid"></div></section>
+        <section class="view" id="profile"><header class="profile-hero"><span class="avatar me large">P</span><div><p class="eyebrow lime">EXECUTIVE ACCOUNT</p><h1>Preet <em class="exec-badge large-badge">ADMIN</em></h1><p class="muted">@preetplays · London, UK</p><p class="bio">Curating a very ambitious backlog. Currently exploring Halcyon.</p></div><button class="secondary">Edit profile</button></header><div class="profile-stats"><div><strong>18</strong><span>Games logged</span></div><div><strong>5</strong><span>Completed</span></div><div><strong>8.4</strong><span>Avg. rating</span></div><div><strong>14h</strong><span>Played this month</span></div></div><section class="account-tools"><div><p class="eyebrow">PERSONALIZE QUESTLOG</p><h2>Appearance</h2><div class="theme-picks"><button data-theme="default" class="theme-choice selected"><i></i>Obsidian</button><button data-theme="midnight" class="theme-choice"><i></i>Midnight</button><button data-theme="sunset" class="theme-choice"><i></i>Sunset</button></div></div><div><p class="eyebrow">YOUR LIBRARY</p><h2>Gaming accounts</h2><p class="muted">Link a platform to import games.</p><button class="secondary connect-trigger">Connect accounts</button></div></section><section class="section-heading"><div><p class="eyebrow">RECENTLY PLAYED</p><h2>Your gaming log</h2></div></section><div class="profile-log"><article><span class="activity-art cyber"></span><div><strong>The Outer Worlds</strong><p>Played for 2h 14m · Progress 62%</p></div><span>Yesterday</span></article><article><span class="activity-art hades"></span><div><strong>Hades II</strong><p>Added to wishlist</p></div><span>Aug 24</span></article></div></section>
+      </main>
+      <aside class="rightbar">
+        <section class="friends-card"><div class="section-heading compact"><div><p class="eyebrow">ONLINE NOW</p><h2>Friends <span class="online-count">4</span></h2></div><button class="text-button">See all</button></div><div class="friend-list"><div class="friend"><span class="avatar amber">M</span><span><strong>Maya Chen</strong><small><i class="online"></i> Playing Valorant</small></span><button>•••</button></div><div class="friend"><span class="avatar purple">J</span><span><strong>Jordan Lee</strong><small><i class="online"></i> In a party</small></span><button>•••</button></div><div class="friend"><span class="avatar blue">S</span><span><strong>Sam Rivera</strong><small><i class="idle"></i> Away · 12m</small></span><button>•••</button></div></div></section>
+        <section class="trending"><div class="section-heading compact"><div><p class="eyebrow">POPULAR WITH FRIENDS</p><h2>Trending this week</h2></div><button class="text-button">More →</button></div><div class="trend-list"><div><span class="rank">01</span><span class="tiny-art neon"></span><p><strong>Cyberpunk 2077</strong><small>8 friends playing</small></p><b>↗</b></div><div><span class="rank">02</span><span class="tiny-art orange"></span><p><strong>Hades II</strong><small>6 friends playing</small></p><b>↗</b></div><div><span class="rank">03</span><span class="tiny-art aqua"></span><p><strong>Clair Obscur</strong><small>5 friends playing</small></p><b>↗</b></div></div></section>
+      </aside>
+    </div>
+    <dialog id="gameDialog"><form method="dialog"><button class="close" value="cancel">×</button><p class="eyebrow lime">ADD TO LIBRARY</p><h2>Add a game</h2><label>Game title<input id="gameTitle" placeholder="e.g. Hollow Knight" required /></label><label>Status<select id="gameStatus"><option>Want to play</option><option>Playing</option><option>Completed</option></select></label><button class="primary wide" value="default" id="saveGame">Add to library</button></form></dialog>
+    <dialog id="accountDialog"><form method="dialog"><button class="close" value="cancel">×</button><p class="eyebrow lime">GAME LIBRARY SYNC</p><h2>Connect an account</h2><p class="muted">Choose a platform to import your owned and recently played games.</p><div class="platform-list"><button value="steam" class="platform"><b>◉</b><span><strong>Steam</strong><small>Import your PC library</small></span><i>Connect →</i></button><button value="xbox" class="platform"><b>✚</b><span><strong>Xbox</strong><small>Import games and achievements</small></span><i>Connect →</i></button><button value="playstation" class="platform"><b>△</b><span><strong>PlayStation</strong><small>Sync your console library</small></span><i>Coming soon</i></button></div></form></dialog>
+    <script src="app.js"></script>
+    <script src="extras.js"></script>
+    <script src="enhancements.js"></script>
+    <script src="more-themes.js"></script>
+    <script src="plus.js"></script>
+    <script src="plus-membership.js"></script>
+    <script src="production.js"></script>
+  </body>
+</html>
