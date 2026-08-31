@@ -2,9 +2,12 @@ import { api, getToken } from "./api.js";
 import { renderAuth, renderOnboarding } from "./auth.js";
 import { renderLibrary } from "./library.js";
 import { renderFeed } from "./feed.js";
+import { renderDetails } from "./details.js";
+import { renderStats } from "./stats.js";
+import { renderFriends } from "./friends.js";
 
 let user = null;
-let currentView = "library";
+let view = { name: "library", gameId: null };
 
 async function bootstrap() {
   if (getToken()) {
@@ -20,6 +23,11 @@ async function bootstrap() {
 function logout() {
   localStorage.removeItem("ql_token");
   user = null;
+  render();
+}
+
+function go(name, gameId = null) {
+  view = { name, gameId };
   render();
 }
 
@@ -42,15 +50,22 @@ function render() {
   renderShell(app);
 }
 
+const NAV = [
+  { name: "library", icon: "▦", label: "My library" },
+  { name: "feed", icon: "✦", label: "Activity" },
+  { name: "stats", icon: "▣", label: "Stats" },
+  { name: "friends", icon: "♧", label: "Friends" },
+  { name: "profile", icon: "◉", label: "Profile" },
+];
+
 function renderShell(app) {
+  const activeNav = view.name === "details" ? "library" : view.name;
   app.innerHTML = `
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand"><span class="brand-mark">Q</span><span>questlog</span></div>
         <nav>
-          <a class="nav-item ${currentView === "library" ? "active" : ""}" data-view="library"><span>▦</span> My library</a>
-          <a class="nav-item ${currentView === "feed" ? "active" : ""}" data-view="feed"><span>✦</span> Activity</a>
-          <a class="nav-item ${currentView === "profile" ? "active" : ""}" data-view="profile"><span>◉</span> Profile</a>
+          ${NAV.map((n) => `<a class="nav-item ${activeNav === n.name ? "active" : ""}" data-view="${n.name}"><span>${n.icon}</span> ${n.label}</a>`).join("")}
         </nav>
         <div class="sidebar-spacer"></div>
         <button class="logout-btn" id="logoutBtn">⏻ Log out</button>
@@ -62,14 +77,16 @@ function renderShell(app) {
   app.querySelectorAll(".nav-item").forEach((el) => {
     el.onclick = (e) => {
       e.preventDefault();
-      currentView = el.dataset.view;
-      render();
+      go(el.dataset.view);
     };
   });
 
   const main = app.querySelector("#mainView");
-  if (currentView === "library") renderLibrary(main, user, () => (currentView = "feed"));
-  else if (currentView === "feed") renderFeed(main, user);
+  if (view.name === "library") renderLibrary(main, user, (gid) => go("details", gid));
+  else if (view.name === "details") renderDetails(main, user, view.gameId, () => go("library"));
+  else if (view.name === "feed") renderFeed(main, user);
+  else if (view.name === "stats") renderStats(main, user);
+  else if (view.name === "friends") renderFriends(main, user);
   else renderProfile(main, user);
 }
 

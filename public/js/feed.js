@@ -7,6 +7,7 @@ const ICONS = {
   finished_game: "✓",
   rated_game: "★",
   removed_game: "🗑",
+  played_session: "⏱",
 };
 
 const LABELS = {
@@ -16,6 +17,7 @@ const LABELS = {
   finished_game: "Finished a game",
   rated_game: "Rated a game",
   removed_game: "Removed a game",
+  played_session: "Played a session",
 };
 
 export async function renderFeed(main, user) {

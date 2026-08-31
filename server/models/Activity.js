@@ -12,6 +12,7 @@ const activitySchema = new mongoose.Schema(
         'finished_game',
         'rated_game',
         'removed_game',
+        'played_session',
       ],
       required: true,
     },

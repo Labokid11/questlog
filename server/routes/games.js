@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Game from '../models/Game.js';
 import Activity from '../models/Activity.js';
+import Session from '../models/Session.js';
 import { protect } from '../middleware/auth.js';
 import { upload } from '../middleware/upload.js';
 
@@ -13,10 +14,22 @@ router.get('/', async (req, res) => {
   res.json(games);
 });
 
+// Get a single game with its sessions
+router.get('/:id', async (req, res) => {
+  try {
+    const game = await Game.findOne({ _id: req.params.id, user: req.user._id });
+    if (!game) return res.status(404).json({ error: 'Game not found' });
+    const sessions = await Session.find({ game: game._id }).sort({ date: -1 });
+    res.json({ ...game.toObject(), sessions });
+  } catch {
+    res.status(500).json({ error: 'Could not load game' });
+  }
+});
+
 // Add a game (poster upload via multipart or posterUrl in body)
 router.post('/', upload.single('poster'), async (req, res) => {
   try {
-    const { title, platform, status, posterUrl, progress, rating, notes } = req.body;
+    const { title, platform, status, posterUrl, progress, rating, notes, description, genre } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
     const finalPoster = req.file ? `/uploads/${req.file.filename}` : posterUrl || '';
     const game = await Game.create({
@@ -28,6 +41,8 @@ router.post('/', upload.single('poster'), async (req, res) => {
       progress: Number(progress) || 0,
       rating: Number(rating) || 0,
       notes: notes || '',
+      description: description || '',
+      genre: genre || '',
     });
     await Activity.create({
       user: req.user._id,
@@ -48,7 +63,7 @@ router.put('/:id', upload.single('poster'), async (req, res) => {
     const game = await Game.findOne({ _id: req.params.id, user: req.user._id });
     if (!game) return res.status(404).json({ error: 'Game not found' });
 
-    const { title, platform, status, posterUrl, progress, rating, notes } = req.body;
+    const { title, platform, status, posterUrl, progress, rating, notes, description, genre } = req.body;
     const prevStatus = game.status;
     const prevProgress = game.progress;
 
@@ -60,6 +75,8 @@ router.put('/:id', upload.single('poster'), async (req, res) => {
     if (progress !== undefined) game.progress = Number(progress);
     if (rating !== undefined) game.rating = Number(rating);
     if (notes !== undefined) game.notes = notes;
+    if (description !== undefined) game.description = description;
+    if (genre !== undefined) game.genre = genre;
 
     await game.save();
 
@@ -99,11 +116,41 @@ router.put('/:id', upload.single('poster'), async (req, res) => {
   }
 });
 
+// Add a play session (playtime tracking)
+router.post('/:id/sessions', async (req, res) => {
+  try {
+    const game = await Game.findOne({ _id: req.params.id, user: req.user._id });
+    if (!game) return res.status(404).json({ error: 'Game not found' });
+    const minutes = Number(req.body.minutes);
+    if (!minutes || minutes < 1) return res.status(400).json({ error: 'Minutes must be at least 1' });
+    const session = await Session.create({
+      user: req.user._id,
+      game: game._id,
+      gameTitle: game.title,
+      minutes,
+      date: req.body.date ? new Date(req.body.date) : new Date(),
+    });
+    game.totalMinutes = (game.totalMinutes || 0) + minutes;
+    await game.save();
+    await Activity.create({
+      user: req.user._id,
+      type: 'played_session',
+      game: game._id,
+      gameTitle: game.title,
+      description: `played ${game.title} for ${minutes} min`,
+    });
+    res.status(201).json(session);
+  } catch {
+    res.status(500).json({ error: 'Could not add session' });
+  }
+});
+
 // Remove a game
 router.delete('/:id', async (req, res) => {
   try {
     const game = await Game.findOneAndDelete({ _id: req.params.id, user: req.user._id });
     if (!game) return res.status(404).json({ error: 'Game not found' });
+    await Session.deleteMany({ game: game._id });
     await Activity.create({
       user: req.user._id,
       type: 'removed_game',

@@ -15,9 +15,17 @@ A full-stack game tracker. Backend: Node + Express + MongoDB (JWT auth, game lib
 ## API
 - `POST /api/auth/signup`, `POST /api/auth/login` → `{ token, user }` (JWT, 7-day expiry)
 - `GET /api/auth/me`, `PUT /api/auth/onboarding` (bearer-protected)
-- `GET/POST/PUT/DELETE /api/games` (bearer-protected; POST/PUT accept multipart `poster` file upload or `posterUrl`)
+- `GET/POST/PUT/DELETE /api/games` (bearer-protected; POST/PUT accept multipart `poster` file upload or `posterUrl`; games now carry `description`, `genre`, `totalMinutes`)
+- `GET /api/games/:id` — single game with its sessions array
+- `POST /api/games/:id/sessions` — log a play session (minutes, date); increments game playtime + emits a `played_session` activity
 - `GET/POST /api/activities` (bearer-protected)
-- Adding/editing/deleting games auto-generates activity entries (added_game, started_game, finished_game, updated_progress, removed_game).
+- `GET /api/stats` — aggregated analytics (hours, completed, platforms, genres, status breakdown, 14-day daily series, current/longest streaks)
+- `GET /api/friends/search?q=`, `GET /api/friends`, `POST/DELETE /api/friends/:id` — follow/unfollow users
+- `GET /api/friends/:id/library`, `GET /api/friends/:id/activity`, `GET /api/friends/:id/compare` — view a friend's library, activity, and shared-game progress comparison
+- Adding/editing/deleting games and logging sessions auto-generate activity entries (added_game, started_game, finished_game, updated_progress, removed_game, played_session).
+
+## Pages (web)
+My library (grid; clicking a card opens Game Details), Activity feed, Stats & Analytics (CSS bar charts, streaks), Friends (search/add/unfollow, view friend library/activity, compare progress), Profile, plus Game Details (poster, description, progress slider, notes, playtime, add session). All share the sidebar nav and dark theme.
 
 ## Secrets
 None required to boot. `JWT_SECRET` and `SESSION_SECRET` have dev placeholders in compose. No external service credentials needed.

@@ -7,6 +7,8 @@ import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import gameRoutes from './routes/games.js';
 import activityRoutes from './routes/activities.js';
+import statsRoutes from './routes/stats.js';
+import friendsRoutes from './routes/friends.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -26,6 +28,8 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/stats', statsRoutes);
+app.use('/api/friends', friendsRoutes);
 
 // SPA fallback — serve index.html for any non-API route
 app.get('*', (req, res, next) => {

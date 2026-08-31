@@ -32,6 +32,17 @@ export const api = {
   updateGame: (id, form) => request(`/games/${id}`, { method: "PUT", body: form, isForm: true }),
   deleteGame: (id) => request(`/games/${id}`, { method: "DELETE" }),
   activities: () => request("/activities"),
+  getGame: (id) => request(`/games/${id}`),
+  addSession: (id, b) => request(`/games/${id}/sessions`, { method: "POST", body: b }),
+  updateGameJson: (id, b) => request(`/games/${id}`, { method: "PUT", body: b }),
+  stats: () => request("/stats"),
+  searchUsers: (q) => request(`/friends/search?q=${encodeURIComponent(q)}`),
+  friends: () => request("/friends"),
+  follow: (id) => request(`/friends/${id}`, { method: "POST" }),
+  unfollow: (id) => request(`/friends/${id}`, { method: "DELETE" }),
+  friendLibrary: (id) => request(`/friends/${id}/library`),
+  friendActivity: (id) => request(`/friends/${id}/activity`),
+  friendCompare: (id) => request(`/friends/${id}/compare`),
 };
 
 export { getToken };

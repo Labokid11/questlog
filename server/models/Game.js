@@ -14,6 +14,9 @@ const gameSchema = new mongoose.Schema(
     progress: { type: Number, default: 0, min: 0, max: 100 },
     rating: { type: Number, default: 0, min: 0, max: 5 },
     notes: { type: String, default: '' },
+    description: { type: String, default: '' },
+    genre: { type: String, default: '', trim: true },
+    totalMinutes: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

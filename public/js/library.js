@@ -9,7 +9,7 @@ const STATUS_LABELS = {
 
 let gamesCache = [];
 
-export async function renderLibrary(main, user, onChangeView) {
+export async function renderLibrary(main, user, onOpenGame) {
   main.innerHTML = `
     <div class="page-head">
       <div><h1>My Library</h1><div class="sub">Track every game you play.</div></div>
@@ -17,12 +17,12 @@ export async function renderLibrary(main, user, onChangeView) {
     </div>
     <div id="libraryContent"><div class="empty"><div class="icon">▦</div><p>Loading…</p></div></div>`;
 
-  await loadGames(main, user, onChangeView);
+  await loadGames(main, user, onOpenGame);
 
-  main.querySelector("#addGameBtn").onclick = () => openGameModal(main, user, null, () => loadGames(main, user, onChangeView));
+  main.querySelector("#addGameBtn").onclick = () => openGameModal(main, user, null, () => loadGames(main, user, onOpenGame));
 }
 
-async function loadGames(main, user, onChangeView) {
+async function loadGames(main, user, onOpenGame) {
   const content = main.querySelector("#libraryContent");
   try {
     gamesCache = await api.games();
@@ -38,14 +38,16 @@ async function loadGames(main, user, onChangeView) {
         <p>Add your first game to get started.</p>
         <button class="btn-accent" id="emptyAdd">+ Add game</button>
       </div>`;
-    content.querySelector("#emptyAdd").onclick = () => openGameModal(main, user, null, () => loadGames(main, user, onChangeView));
+    content.querySelector("#emptyAdd").onclick = () => openGameModal(main, user, null, () => loadGames(main, user, onOpenGame));
     return;
   }
   content.innerHTML = `<div class="game-grid">${gamesCache.map((g) => gameCard(g)).join("")}</div>`;
   content.querySelectorAll(".game-card").forEach((card) => {
     const id = card.dataset.id;
-    card.querySelector(".edit-btn").onclick = () => openGameModal(main, user, id, () => loadGames(main, user, onChangeView));
-    card.querySelector(".del-btn").onclick = () => deleteGame(main, id, () => loadGames(main, user, onChangeView));
+    card.querySelector(".edit-btn").onclick = (e) => { e.stopPropagation(); openGameModal(main, user, id, () => loadGames(main, user, onOpenGame)); };
+    card.querySelector(".del-btn").onclick = (e) => { e.stopPropagation(); deleteGame(main, id, () => loadGames(main, user, onOpenGame)); };
+    card.onclick = () => onOpenGame(id);
+    card.style.cursor = "pointer";
   });
 }
 
@@ -97,7 +99,11 @@ function openGameModal(main, user, id, onSaved) {
         </div>
         <div class="field"><label>Poster image URL (optional)</label><input id="g-posterurl" type="url" value="${editing && editing.posterUrl && !editing.posterUrl.startsWith("/uploads/") ? escapeHtml(editing.posterUrl) : ""}" placeholder="https://…" /></div>
         <div class="field"><label>Or upload a poster</label><input id="g-posterfile" type="file" accept="image/*" /></div>
-        <div class="field"><label>Notes</label><input id="g-notes" type="text" value="${editing ? escapeHtml(editing.notes) : ""}" placeholder="Optional" /></div>
+        <div class="row">
+          <div class="field"><label>Genre</label><input id="g-genre" type="text" value="${editing ? escapeHtml(editing.genre || "") : ""}" placeholder="e.g. RPG, Action" /></div>
+          <div class="field"><label>Notes</label><input id="g-notes" type="text" value="${editing ? escapeHtml(editing.notes) : ""}" placeholder="Optional" /></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="g-description" rows="3" placeholder="What is this game about?">${editing ? escapeHtml(editing.description || "") : ""}</textarea></div>
         <div class="form-error" id="gError"></div>
         <div class="modal-footer">
           <button type="button" class="btn-ghost" id="gCancel">Cancel</button>
@@ -122,6 +128,8 @@ function openGameModal(main, user, id, onSaved) {
     form.append("progress", overlay.querySelector("#g-progress").value || 0);
     form.append("rating", overlay.querySelector("#g-rating").value || 0);
     form.append("notes", overlay.querySelector("#g-notes").value.trim());
+    form.append("genre", overlay.querySelector("#g-genre").value.trim());
+    form.append("description", overlay.querySelector("#g-description").value.trim());
     const file = overlay.querySelector("#g-posterfile").files[0];
     if (file) form.append("poster", file);
     else form.append("posterUrl", overlay.querySelector("#g-posterurl").value.trim());
