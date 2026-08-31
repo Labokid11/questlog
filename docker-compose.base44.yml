@@ -1,0 +1,14 @@
+services:
+  web:
+    image: node:22
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - PORT=3000
+      - SESSION_SECRET=base44-dev-session-secret-change-me
+      - APP_ORIGIN=http://localhost:3000
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
