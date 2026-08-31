@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Questlog",
+    "slug": "questlog",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "questlog",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0e0f1a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.questlog.app"
+    },
+    "android": {
+      "package": "com.questlog.app"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

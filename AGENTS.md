@@ -1,14 +1,28 @@
 # Questlog — Base44 dev notes
 
 ## What this is
-A Node/Express app serving a static HTML/CSS/JS frontend (the Questlog game tracker UI) plus optional OAuth callback routes for Steam, Xbox, and PlayStation. No database, no build step — Express serves the repo's static files directly from disk.
+A full-stack game tracker. Backend: Node + Express + MongoDB (JWT auth, game library CRUD, activity feed). Web frontend: vanilla HTML/CSS/JS SPA served as static files. Mobile: React Native + Expo app (in `mobile/`, not run in the preview).
+
+## Architecture
+- `server/` — Express backend (ESM). Entry `server.js`. Models in `server/models/`, routes in `server/routes/`, middleware in `server/middleware/`. Serves the web frontend from `public/` and uploaded posters from `server/uploads/`.
+- `public/` — web frontend SPA (`index.html`, `styles.css`, `js/` modules: `api.js`, `app.js`, `auth.js`, `library.js`, `feed.js`).
+- `mobile/` — Expo app (React Navigation). Connects to the same backend; set `API_BASE` in `mobile/src/api/client.js` to the backend URL when running on a device.
+- Legacy files at repo root (`app.js`, `extras.*`, `production.*`, etc.) are the original static demo and are no longer served.
 
 ## Running it
-`docker compose -f docker-compose.base44.yml up -d` — uses `node:22`, runs `npm install` then `npm run dev` (`node --watch server.js`) on port 3000. The repo is bind-mounted at `/app`, so edits to static files appear immediately (Express reads from disk per request) and edits to `server.js` trigger a `node --watch` restart.
+`docker compose -f docker-compose.base44.yml up -d` — starts `mongo` (mongo:7) and `web` (node:22). The web service runs `npm install && npm run dev` (`node --watch server.js`) in `/app/server`, bind-mounted at `/app` so edits hot-reload. Port 3000.
+
+## API
+- `POST /api/auth/signup`, `POST /api/auth/login` → `{ token, user }` (JWT, 7-day expiry)
+- `GET /api/auth/me`, `PUT /api/auth/onboarding` (bearer-protected)
+- `GET/POST/PUT/DELETE /api/games` (bearer-protected; POST/PUT accept multipart `poster` file upload or `posterUrl`)
+- `GET/POST /api/activities` (bearer-protected)
+- Adding/editing/deleting games auto-generates activity entries (added_game, started_game, finished_game, updated_progress, removed_game).
 
 ## Secrets
-None required to boot. `SESSION_SECRET` has a dev fallback (a placeholder is set in compose). Platform OAuth credentials (`XBOX_CLIENT_ID`/`XBOX_CLIENT_SECRET`, `PLAYSTATION_*`, Steam Web API key) are optional — the app boots and serves the full UI without them; the `/auth/*` routes return "not configured" until credentials are added. If you want real account-connection flows to work, those credentials must be supplied via `/run/base44/app.env` (declare them with `set_secrets`).
+None required to boot. `JWT_SECRET` and `SESSION_SECRET` have dev placeholders in compose. No external service credentials needed.
 
 ## Verify
-- `curl -sf http://localhost:3000/` returns the Questlog HTML shell.
-- `curl -sf http://localhost:3000/api/connected-accounts` returns `{"steam":false,"xbox":false,"playstation":false}`.
+- `curl -sf http://localhost:3000/api/health` → `{"ok":true}`
+- Full API flow tested via curl: signup → me → onboarding → add game → list games → activities → login (all pass).
+- Frontend verified in preview: signup → onboarding → app shell → add game → game card in library → activity entry in feed.
