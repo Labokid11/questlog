@@ -8,6 +8,7 @@
     "scheme": "questlog",
     "userInterfaceStyle": "dark",
     "splash": {
+      "image": "./assets/splash.png",
       "backgroundColor": "#0e0f1a"
     },
     "ios": {
@@ -15,7 +16,11 @@
       "bundleIdentifier": "com.questlog.app"
     },
     "android": {
-      "package": "com.questlog.app"
+      "package": "com.questlog.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0e0f1a"
+      }
     },
     "web": {
       "bundler": "metro"
