@@ -4,11 +4,14 @@ import cors from 'cors';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { connectDB } from './config/db.js';
+import { seedAdmin } from './config/seed.js';
 import authRoutes from './routes/auth.js';
 import gameRoutes from './routes/games.js';
 import activityRoutes from './routes/activities.js';
 import statsRoutes from './routes/stats.js';
 import friendsRoutes from './routes/friends.js';
+import userRoutes from './routes/user.js';
+import adminRoutes from './routes/admin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,6 +33,8 @@ app.use('/api/games', gameRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/friends', friendsRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // SPA fallback — serve index.html for any non-API route
 app.get('*', (req, res, next) => {
@@ -39,6 +44,7 @@ app.get('*', (req, res, next) => {
 
 const start = async () => {
   await connectDB();
+  await seedAdmin();
   app.listen(port, '0.0.0.0', () => console.log(`Questlog API running on port ${port}`));
 };
 

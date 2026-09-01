@@ -11,6 +11,9 @@ const pub = (u) => ({
   avatar: u.avatar,
   favouritePlatform: u.favouritePlatform,
   onboarded: u.onboarded,
+  premiumTier: u.premiumTier,
+  role: u.role,
+  theme: u.theme,
 });
 
 // Signup

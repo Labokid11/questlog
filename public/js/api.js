@@ -43,6 +43,16 @@ export const api = {
   friendLibrary: (id) => request(`/friends/${id}/library`),
   friendActivity: (id) => request(`/friends/${id}/activity`),
   friendCompare: (id) => request(`/friends/${id}/compare`),
+  friendsLimit: () => request("/friends/limit"),
+  unlockPremium: (code) => request("/user/premium/unlock", { method: "POST", body: { code } }),
+  togglePremium: () => request("/user/premium/toggle", { method: "POST" }),
+  saveTheme: (theme) => request("/user/theme", { method: "PUT", body: { theme } }),
+  statsHeatmap: () => request("/stats/heatmap"),
+  adminUsers: () => request("/admin/users"),
+  adminTogglePremium: (id) => request(`/admin/user/${id}/premium`, { method: "POST" }),
+  adminResetUser: (id) => request(`/admin/user/${id}/reset`, { method: "POST" }),
+  adminDeleteUser: (id) => request(`/admin/user/${id}`, { method: "DELETE" }),
+  adminAnalytics: () => request("/admin/analytics"),
 };
 
 export { getToken };

@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import Game from '../models/Game.js';
 import Session from '../models/Session.js';
-import { protect } from '../middleware/auth.js';
+import { protect, requirePremium } from '../middleware/auth.js';
 
 const router = Router();
 router.use(protect);
+
+const isPremium = (u) => u.premiumTier === 'pro' || u.role === 'admin';
 
 // Aggregated stats for the current user
 router.get('/', async (req, res) => {
@@ -71,9 +73,35 @@ router.get('/', async (req, res) => {
       dailySeries,
       currentStreak: streaks.current,
       longestStreak: streaks.longest,
+      premium: isPremium(req.user),
     });
   } catch (e) {
     res.status(500).json({ error: 'Could not load stats' });
+  }
+});
+
+// Premium-only: activity heatmap (last 12 weeks)
+router.get('/heatmap', requirePremium, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const days = 84;
+    const since = new Date();
+    since.setDate(since.getDate() - (days - 1));
+    since.setHours(0, 0, 0, 0);
+    const sessions = await Session.find({ user: userId, date: { $gte: since } });
+    const map = {};
+    for (let i = 0; i < days; i++) {
+      const d = new Date(since);
+      d.setDate(since.getDate() + i);
+      map[d.toISOString().slice(0, 10)] = 0;
+    }
+    sessions.forEach((s) => {
+      const key = new Date(s.date).toISOString().slice(0, 10);
+      if (map[key] !== undefined) map[key] += s.minutes;
+    });
+    res.json(Object.entries(map).map(([date, minutes]) => ({ date, minutes })));
+  } catch {
+    res.status(500).json({ error: 'Could not load heatmap' });
   }
 });
 
@@ -87,7 +115,6 @@ function computeStreaks(dayKeys) {
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayKey = yesterday.toISOString().slice(0, 10);
 
-  // Current streak: count back from today (or yesterday if no session today yet)
   let cursor;
   if (dayKeys.includes(todayKey)) cursor = todayKey;
   else if (dayKeys.includes(yesterdayKey)) cursor = yesterdayKey;

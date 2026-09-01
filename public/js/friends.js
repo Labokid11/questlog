@@ -11,11 +11,26 @@ export async function renderFriends(main, user) {
       <input type="text" id="friendSearch" placeholder="Search by username…" autocomplete="off" />
       <div id="searchResults" class="search-results"></div>
     </div>
+    <div id="friendLimit" class="friend-limit"></div>
     <div id="friendsList"><div class="empty"><div class="icon">♧</div><p>Loading…</p></div></div>
     <div id="friendDetail"></div>`;
 
   setupSearch(main);
   await loadFriends(main);
+  loadLimit(main, user);
+}
+
+async function loadLimit(main, user) {
+  const el = main.querySelector("#friendLimit");
+  try {
+    const info = await api.friendsLimit();
+    if (info.premium) {
+      el.innerHTML = `<span class="limit-pro">★ Unlimited friends</span>`;
+    } else {
+      const remaining = info.limit - info.count;
+      el.innerHTML = `<span class="limit-free">${info.count}/${info.limit} friends · ${remaining} remaining</span>`;
+    }
+  } catch {}
 }
 
 async function loadFriends(main) {

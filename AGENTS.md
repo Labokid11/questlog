@@ -30,6 +30,16 @@ My library (grid; clicking a card opens Game Details), Activity feed, Stats & An
 ## Secrets
 None required to boot. `JWT_SECRET` and `SESSION_SECRET` have dev placeholders in compose. No external service credentials needed.
 
+## Premium & Admin
+- User model has `premiumTier` ("free"|"pro"), `role` ("user"|"admin"), and `theme` fields.
+- Premium is unlocked via codes (`POST /api/user/premium/unlock`), a developer toggle (`POST /api/user/premium/toggle`), or a secret unlock link (`/?unlock=CODE`). Valid codes: QUESTLOG-PRO, PREMIUM-2024, GAMER-FOREVER, UNLOCK-PRO.
+- `requirePremium` middleware gates the heatmap endpoint; free tier is limited to 5 friends (enforced server-side); custom cover file uploads require premium.
+- Admin account is auto-seeded on startup: `admin@questlog.dev` / `admin123456` (username `preet`, role `admin`, premiumTier `pro`).
+- Admin routes (`/api/admin/*`) use `requireAdmin` middleware: list users, toggle premium, reset user data, delete users, app analytics.
+- Themes: 4 free (default, daylight, slate, ocean) + 5 premium (neon, cyberpunk, midnight, sunset, pixel). Applied via CSS custom properties on `<html>`. Saved per-user via `PUT /api/user/theme`.
+- Web frontend: Settings page (Premium + themes + dev toggle), Admin panel (admin-only nav), lock icons on premium-only stats (genre, heatmap, streaks), Premium/Admin badges on profile.
+- Mobile: SettingsScreen (premium toggle + themes), AdminScreen (admin panel), StatsScreen (with premium locks), ProfileScreen (badges).
+
 ## Verify
 - `curl -sf http://localhost:3000/api/health` → `{"ok":true}`
 - Full API flow tested via curl: signup → me → onboarding → add game → list games → activities → login (all pass).

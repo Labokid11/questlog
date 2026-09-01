@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, default: '' },
     favouritePlatform: { type: String, default: '' },
     onboarded: { type: Boolean, default: false },
+    premiumTier: { type: String, enum: ['free', 'pro'], default: 'free' },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    theme: { type: String, default: 'default' },
   },
   { timestamps: true }
 );

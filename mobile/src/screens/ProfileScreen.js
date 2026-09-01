@@ -23,6 +23,16 @@ export default function ProfileScreen() {
           <View>
             <Text style={s.name}>{user?.username}</Text>
             <Text style={s.email}>{user?.email}</Text>
+            <View style={s.badgeRow}>
+              {isPro ? (
+                <View style={s.badgePro}><Text style={s.badgeProText}>★ Premium</Text></View>
+              ) : (
+                <View style={s.badgeFree}><Text style={s.badgeFreeText}>Free</Text></View>
+              )}
+              {user?.role === 'admin' && (
+                <View style={s.badgeAdmin}><Text style={s.badgeAdminText}>🛡 Admin</Text></View>
+              )}
+            </View>
           </View>
         </View>
         <View style={s.stats}>
@@ -57,4 +67,11 @@ const s = StyleSheet.create({
   detailVal: { color: '#eef0ff', fontWeight: '600' },
   logoutBtn: { marginTop: 18, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: '#2c3050', alignItems: 'center', backgroundColor: '#1c1f33' },
   logoutText: { color: '#f87171', fontWeight: '700' },
+  badgeRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  badgePro: { backgroundColor: '#7c5cff', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
+  badgeProText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  badgeFree: { backgroundColor: '#232640', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, borderWidth: 1, borderColor: '#2c3050' },
+  badgeFreeText: { color: '#6b6f93', fontSize: 12, fontWeight: '600' },
+  badgeAdmin: { backgroundColor: 'rgba(248,113,113,0.18)', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(248,113,113,0.3)' },
+  badgeAdminText: { color: '#f87171', fontSize: 12, fontWeight: '700' },
 });

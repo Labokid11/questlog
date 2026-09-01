@@ -98,7 +98,7 @@ function openGameModal(main, user, id, onSaved) {
           <div class="field"><label>Rating (0-5)</label><input id="g-rating" type="number" min="0" max="5" value="${editing ? editing.rating : 0}" /></div>
         </div>
         <div class="field"><label>Poster image URL (optional)</label><input id="g-posterurl" type="url" value="${editing && editing.posterUrl && !editing.posterUrl.startsWith("/uploads/") ? escapeHtml(editing.posterUrl) : ""}" placeholder="https://…" /></div>
-        <div class="field"><label>Or upload a poster</label><input id="g-posterfile" type="file" accept="image/*" /></div>
+        <div class="field"><label>${isPremium(user) ? "Or upload a poster" : "Or upload a poster"} ${isPremium(user) ? "" : '<span class="lock-inline">🔒 Premium</span>'}</label><input id="g-posterfile" type="file" accept="image/*" ${isPremium(user) ? "" : "disabled"} /></div>
         <div class="row">
           <div class="field"><label>Genre</label><input id="g-genre" type="text" value="${editing ? escapeHtml(editing.genre || "") : ""}" placeholder="e.g. RPG, Action" /></div>
           <div class="field"><label>Notes</label><input id="g-notes" type="text" value="${editing ? escapeHtml(editing.notes) : ""}" placeholder="Optional" /></div>
@@ -152,6 +152,10 @@ async function deleteGame(main, id, onDone) {
   } catch {
     alert("Could not delete game");
   }
+}
+
+function isPremium(user) {
+  return user && (user.premiumTier === "pro" || user.role === "admin");
 }
 
 function escapeHtml(s) {

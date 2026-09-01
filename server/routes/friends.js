@@ -17,6 +17,9 @@ const pubUser = (u) => ({
   favouritePlatform: u.favouritePlatform,
 });
 
+const isPremium = (u) => u.premiumTier === 'pro' || u.role === 'admin';
+const FREE_FRIEND_LIMIT = 5;
+
 // Search users by username (for adding friends)
 router.get('/search', async (req, res) => {
   const q = String(req.query.q || '').trim();
@@ -28,6 +31,12 @@ router.get('/search', async (req, res) => {
     .limit(10)
     .select('username avatar favouritePlatform');
   res.json(users.map(pubUser));
+});
+
+// Friend limit status
+router.get('/limit', async (req, res) => {
+  const count = await Follow.countDocuments({ follower: req.user._id });
+  res.json({ count, limit: isPremium(req.user) ? null : FREE_FRIEND_LIMIT, premium: isPremium(req.user) });
 });
 
 // List friends (users I follow) with their stats
@@ -54,6 +63,13 @@ router.post('/:id', async (req, res) => {
     if (!target) return res.status(404).json({ error: 'User not found' });
     const exists = await Follow.findOne({ follower: req.user._id, following: targetId });
     if (exists) return res.status(409).json({ error: 'Already following' });
+    // Free tier: max 5 friends
+    if (!isPremium(req.user)) {
+      const count = await Follow.countDocuments({ follower: req.user._id });
+      if (count >= FREE_FRIEND_LIMIT) {
+        return res.status(403).json({ error: 'Free tier is limited to 5 friends. Upgrade to Premium for unlimited friends.' });
+      }
+    }
     await Follow.create({ follower: req.user._id, following: targetId });
     res.status(201).json({ ok: true, user: pubUser(target) });
   } catch {

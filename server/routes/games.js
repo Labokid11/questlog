@@ -8,6 +8,8 @@ import { upload } from '../middleware/upload.js';
 const router = Router();
 router.use(protect);
 
+const isPremium = (u) => u.premiumTier === 'pro' || u.role === 'admin';
+
 // List user's games
 router.get('/', async (req, res) => {
   const games = await Game.find({ user: req.user._id }).sort({ createdAt: -1 });
@@ -31,6 +33,10 @@ router.post('/', upload.single('poster'), async (req, res) => {
   try {
     const { title, platform, status, posterUrl, progress, rating, notes, description, genre } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
+    // Custom cover upload is a Premium feature
+    if (req.file && !isPremium(req.user)) {
+      return res.status(403).json({ error: 'Custom cover uploads are a Premium feature. Use an image URL instead.' });
+    }
     const finalPoster = req.file ? `/uploads/${req.file.filename}` : posterUrl || '';
     const game = await Game.create({
       user: req.user._id,
@@ -62,6 +68,11 @@ router.put('/:id', upload.single('poster'), async (req, res) => {
   try {
     const game = await Game.findOne({ _id: req.params.id, user: req.user._id });
     if (!game) return res.status(404).json({ error: 'Game not found' });
+
+    // Custom cover upload is a Premium feature
+    if (req.file && !isPremium(req.user)) {
+      return res.status(403).json({ error: 'Custom cover uploads are a Premium feature. Use an image URL instead.' });
+    }
 
     const { title, platform, status, posterUrl, progress, rating, notes, description, genre } = req.body;
     const prevStatus = game.status;

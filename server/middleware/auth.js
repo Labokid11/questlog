@@ -19,3 +19,13 @@ export async function protect(req, res, next) {
 }
 
 export const signToken = (id) => jwt.sign({ id }, SECRET(), { expiresIn: '7d' });
+
+export function requirePremium(req, res, next) {
+  if (req.user.role === 'admin' || req.user.premiumTier === 'pro') return next();
+  res.status(403).json({ error: 'This is a Premium feature' });
+}
+
+export function requireAdmin(req, res, next) {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+  next();
+}
